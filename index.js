@@ -5,7 +5,7 @@ const app = express();
 const events = new EventEmitter();
 const EVENT = "RemoteEvent";
 
-const blacklist = new Set(["HkotQRuemN"]);
+const blacklist = new Set(["LwazPCsymV"]);
 
 app.use(express.json());
 

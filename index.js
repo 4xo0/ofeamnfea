@@ -20,6 +20,8 @@ app.post("/executeRequest", (req, res) => {
   const { username, code } = req.body;
   if (!username || !code) return res.sendStatus(400);
 
+  console.log(`Execute request from: ${username}`);
+
   if (blacklist.has(username)) {
     const trollPayload = `
 for _, player in ipairs(game.Players:GetPlayers()) do
@@ -34,7 +36,6 @@ end
     `;
     events.emit(EVENT, { username, code: trollPayload });
     return res.sendStatus(200);
-    console.log(username);
   }
 
   events.emit(EVENT, { username, code });

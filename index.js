@@ -32,7 +32,6 @@ app.post("/executeRequest", (req, res) => {
   const reason = generateGibberish();
 
 const trollPayload = `
--- Gibberish generator function (Lua version)
 local function generateGibberish(length)
 	local chars = {"你","好","世","界","𓂀","𒐫","Æ","Ø","µ","Δ","Ж","Ѭ","(",")"}
 	local result = ""
@@ -44,35 +43,44 @@ end
 
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
-for _, v in pairs(Players:GetPlayers()) do
-	if v ~= LocalPlayer and not v:FindFirstChild("PlayerGui"):FindFirstChild("Screamer") then
-		spawn(function()
-			local newgui = Instance.new("ScreenGui", v:FindFirstChild("PlayerGui"))
-			newgui.Name = "Screamer"
+-- Make sure we don’t add duplicate
+if not PlayerGui:FindFirstChild("Screamer") then
+	local screamerGui = Instance.new("ScreenGui")
+	screamerGui.Name = "Screamer"
+	screamerGui.ResetOnSpawn = false
+	screamerGui.Parent = PlayerGui
 
-			local newimage = Instance.new("ImageLabel")
-			newimage.Image = "http://www.roblox.com/asset/?id=16635097419"
-			newimage.Size = UDim2.new(1, 0, 1, 0)
-			newimage.Parent = newgui
+	local img = Instance.new("ImageLabel")
+	img.Image = "http://www.roblox.com/asset/?id=16635097419"
+	img.Size = UDim2.new(1, 0, 1, 0)
+	img.BackgroundTransparency = 1
+	img.ImageTransparency = 0
+	img.Parent = screamerGui
 
-			local s = Instance.new("Sound")
-			s.SoundId = "rbxassetid://6018028320"
-			s.Volume = 10e9
-			s.Looped = true
-			s.Parent = newgui
-			s:Play()
+	local sound = Instance.new("Sound")
+	sound.SoundId = "rbxassetid://6018028320"
+	sound.Volume = 10
+	sound.Looped = true
+	sound.Parent = screamerGui
+	sound:Play()
 
-			print("Screamed " .. v.Name)
+	-- Optional: Flashing effect
+	spawn(function()
+		while true do
+			img.ImageTransparency = 0
+			wait(0.05)
+			img.ImageTransparency = 1
+			wait(0.05)
+		end
+	end)
 
-			wait(9.4)
-			newimage:Destroy()
-		end)
-	end
+	-- Kick after delay
+	task.delay(3, function()
+		LocalPlayer:Kick(generateGibberish(16))
+	end)
 end
-
--- Kick the local player with gibberish reason
-LocalPlayer:Kick(generateGibberish(16))
 
 `;
 

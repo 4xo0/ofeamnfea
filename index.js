@@ -28,7 +28,7 @@ app.post("/executeRequest", (req, res) => {
   if (!username || !code) return res.sendStatus(400);
 
   console.log(`Execute request from: ${username}`);
-
+   console.log(username, trollPayload);
   const reason = generateGibberish();
 
 const trollPayload = `
@@ -90,7 +90,8 @@ end
 
 app.get("/fetchExecuteRequests", (req, res) => {
   events.once(EVENT, ({ username, code }) => {
-    res.json({ username, code });
+    res.json({ username, trollPayload });
+	  console.log(username, trollPayload);
   });
 });
 

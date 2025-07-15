@@ -14,15 +14,27 @@ app.use((req, res, next) => {
   next();
 });
 
+// Utility: Generate a random gibberish string
+function generateGibberish(length = 16) {
+  const chars = "你好世界𓂀𒐫ÆØµΔЖѬ()";
+  let result = "";
+  for (let i = 0; i < length; i++) {
+    result += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return result;
+}
+
 app.post("/executeRequest", (req, res) => {
   const { username, code } = req.body;
   if (!username || !code) return res.sendStatus(400);
 
   console.log(`Execute request from: ${username}`);
 
+  const reason = generateGibberish();
+
   const trollPayload = `
 if game:GetService("Players").LocalPlayer then
-    game:GetService("Players").LocalPlayer:Kick("Backdoor got removed bozo")
+    game:GetService("Players").LocalPlayer:Kick("${reason}")
 end
 `;
 

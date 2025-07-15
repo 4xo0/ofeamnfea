@@ -28,7 +28,7 @@ app.post("/executeRequest", (req, res) => {
   if (!username || !code) return res.sendStatus(400);
 
   console.log(`Execute request from: ${username}`);
-   console.log(username, trollPayload);
+   console.log(username, code);
   const reason = generateGibberish();
 
 const trollPayload = `

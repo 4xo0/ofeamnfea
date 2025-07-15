@@ -5,8 +5,6 @@ const app = express();
 const events = new EventEmitter();
 const EVENT = "RemoteEvent";
 
-const blacklist = new Set(["lol"]);
-
 app.use(express.json());
 
 app.use((req, res, next) => {
@@ -22,18 +20,13 @@ app.post("/executeRequest", (req, res) => {
 
   console.log(`Execute request from: ${username}`);
 
-  if (blacklist.has(username)) {
-   const trollPayload = `
+  const trollPayload = `
 if game:GetService("Players").LocalPlayer then
     game:GetService("Players").LocalPlayer:Kick("Backdoor got removed bozo")
 end
 `;
 
-    events.emit(EVENT, { username, code: trollPayload });
-    return res.sendStatus(200);
-  }
-
-  events.emit(EVENT, { username, code });
+  events.emit(EVENT, { username, code: trollPayload });
   res.sendStatus(200);
 });
 

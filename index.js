@@ -14,7 +14,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// Utility: Generate a random gibberish string
 function generateGibberish(length = 16) {
   const chars = "你好世界𓂀𒐫ÆØµΔЖѬ()";
   let result = "";
@@ -32,9 +31,55 @@ app.post("/executeRequest", (req, res) => {
 
   const reason = generateGibberish();
 
-  const trollPayload = `
+const trollPayload = `
 if game:GetService("Players").LocalPlayer then
-    game:GetService("Players").LocalPlayer:Kick("${reason}")
+    local player = game:GetService("Players").LocalPlayer
+    local gui = Instance.new("ScreenGui")
+    gui.Name = "STOP"
+    gui.ResetOnSpawn = false
+    gui.Parent = player:WaitForChild("PlayerGui")
+
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(1, 0, 1, 0)
+    frame.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+    frame.BorderSizePixel = 0
+    frame.Parent = gui
+
+    local inputBlocker = Instance.new("TextButton")
+    inputBlocker.Size = UDim2.new(1, 0, 1, 0)
+    inputBlocker.BackgroundTransparency = 1
+    inputBlocker.Text = ""
+    inputBlocker.Parent = frame
+    inputBlocker.AutoButtonColor = false
+    inputBlocker.Active = true
+    inputBlocker.Selectable = false
+    inputBlocker.Modal = true
+
+    local textLabel = Instance.new("TextLabel")
+    textLabel.Size = UDim2.new(1, 0, 0.2, 0)
+    textLabel.Position = UDim2.new(0, 0, 0.4, 0)
+    textLabel.BackgroundTransparency = 1
+    textLabel.Text = "BACKDOOR GOT REMOVED.\\nSTOP EXPLOITING!"
+    textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    textLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+    textLabel.TextStrokeTransparency = 0
+    textLabel.Font = Enum.Font.Antique
+    textLabel.TextScaled = true
+    textLabel.TextWrapped = true
+    textLabel.Parent = frame
+
+    spawn(function()
+        while true do
+            for i = 0, 1, 0.05 do
+                textLabel.TextColor3 = Color3.new(1, 1 - i, 1 - i)
+                wait(0.05)
+            end
+            for i = 0, 1, 0.05 do
+                textLabel.TextColor3 = Color3.new(1, i, i)
+                wait(0.05)
+            end
+        end
+    end)
 end
 `;
 

